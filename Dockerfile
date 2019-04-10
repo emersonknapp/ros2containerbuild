@@ -1,6 +1,7 @@
-FROM ubuntu:18.04
+FROM ubuntu:bionic
 
-ENV CHOOSE_ROS_DISTRO=crystal
+RUN echo 'Acquire::HTTP::Proxy "http://240.10.0.3:3142";' >> /etc/apt/apt.conf.d/01proxy \
+ && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy
 
 # set up timezone
 RUN echo 'Etc/UTC' > /etc/timezone && \
@@ -8,8 +9,15 @@ RUN echo 'Etc/UTC' > /etc/timezone && \
 
 # install core dependencies
 RUN apt-get update && apt-get install -q -y \
-       tzdata curl gnupg2 lsb-release \
+       tzdata \
+       locales \
+       curl \
+       gnupg2 \
+       lsb-release \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=en_US.UTF-8
+RUN locale-gen en_US $LANG && update-locale LC_ALL=$LANG LANG=$LANG
 
 # add ros apt repos
 RUN curl http://repo.ros2.org/repos.key | apt-key add - \
@@ -53,10 +61,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libtinyxml2-dev \
   && rm -rf /var/lib/apt/lists/*
 
-#Setup ROS2 code for compile
-WORKDIR /root/ros2_ws/ros2_base
+RUN apt-get update && apt install -y \
+  clang \
+  libc++-dev \
+  libc++abi-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-# ADD ros2.repos /root/ros2_ws/ros2_base/ros2.repos
+#Setup ROS2 code for compile
+WORKDIR /root/ros
+
 # Get a ros2repos for rosdep install, but not to actually use
 RUN wget https://raw.githubusercontent.com/ros2/ros2/master/ros2.repos \
     && mkdir src \
@@ -65,3 +78,10 @@ RUN wget https://raw.githubusercontent.com/ros2/ros2/master/ros2.repos \
     && apt-get update && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro crystal -y --skip-keys "console_bridge fastcdr fastrtps libopensplice67 libopensplice69 rti-connext-dds-5.3.1 urdfdom_headers" \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y zsh vim && rm -rf /var/lib/apt/lists/*
+
+# Get mixins - allow for overlay
+RUN python3 -m pip install -U colcon-mixin
+RUN git clone https://github.com/colcon/colcon-mixin-repository /root/colcon-mixin-repository
+RUN colcon mixin add default file:///root/colcon-mixin-repository/index.yaml && colcon mixin update
