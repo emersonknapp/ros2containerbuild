@@ -85,3 +85,7 @@ RUN apt-get update && apt-get install -y zsh vim && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install -U colcon-mixin
 RUN git clone https://github.com/colcon/colcon-mixin-repository /root/colcon-mixin-repository
 RUN colcon mixin add default file:///root/colcon-mixin-repository/index.yaml && colcon mixin update
+
+RUN apt-get update && apt-get install -y gdb && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && RTI_NC_LICENSE_ACCEPTED=yes apt-get install -y rti-connext-dds-5.3.1 && rm -rf /var/lib/apt/lists/*
