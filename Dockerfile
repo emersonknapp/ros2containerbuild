@@ -89,3 +89,16 @@ RUN colcon mixin add default file:///root/colcon-mixin-repository/index.yaml && 
 RUN apt-get update && apt-get install -y gdb && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && RTI_NC_LICENSE_ACCEPTED=yes apt-get install -y rti-connext-dds-5.3.1 && rm -rf /var/lib/apt/lists/*
+
+COPY setup.bash /root/rosdev_setup.bash
+RUN echo "source ~/rosdev_setup.bash" >> /root/.bashrc
+
+
+# Enable debug packages
+RUN apt-get update && apt-get install ubuntu-dbgsym-keyring && rm -rf /var/lib/apt/lists/*
+RUN echo "deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse" > /etc/apt/sources.list.d/ddebs.list && \
+    echo "deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse" > /etc/apt/sources.list.d/ddebs.list
+
+# Enable source packages
+# TODO uncomment deb-src lines
+# Do this last
