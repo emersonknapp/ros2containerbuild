@@ -30,9 +30,6 @@ RUN apt-get update --fix-missing && apt-get install -y \
 RUN echo "deb http://repositories.ros.org/ubuntu/testing/ `lsb_release -cs` main" > /etc/apt/sources.list.d/ros-latest.list
 RUN curl --silent http://packages.osrfoundation.org/gazebo.key | apt-key add -
 
-# RUN curl http://repo.ros2.org/repos.key | apt-key add - \
-# && sh -c 'echo "deb [arch=armhf,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
-
 # ROS tools
 RUN apt-get update && apt-get install -y \
     python3-lark-parser \
