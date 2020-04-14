@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 # RUN echo 'Acquire::HTTP::Proxy "http://240.10.0.1:3142";' >> /etc/apt/apt.conf.d/01proxy \
 #  && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy
@@ -29,10 +29,7 @@ RUN apt-get update --fix-missing && apt-get install -y \
     cmake \
     git \
     python3-colcon-common-extensions \
-    python3-lark-parser \
     python3-pip \
-    python-rosdep \
-    python3-vcstool \
     wget \
   && rm -rf /var/lib/apt/lists/*
 
@@ -53,6 +50,8 @@ RUN python3 -m pip install -U \
   pytest \
   pytest-cov \
   pytest-runner \
+  vcstool \
+  rosdep \
   setuptools
 
 # install Fast-RTPS dependencies
@@ -81,7 +80,7 @@ RUN wget https://raw.githubusercontent.com/ros2/ros2/master/ros2.repos \
     && vcs import src < ros2.repos \
     && rosdep init \
     && apt-get update && rosdep update \
-    && rosdep install --from-paths src --ignore-src --rosdistro crystal -y --skip-keys "console_bridge fastcdr fastrtps libopensplice67 libopensplice69 rti-connext-dds-5.3.1 urdfdom_headers" \
+    && rosdep install --from-paths src --ignore-src --rosdistro eloquent -y --skip-keys "console_bridge fastcdr fastrtps libopensplice67 libopensplice69 rti-connext-dds-5.3.1 urdfdom_headers" \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y zsh vim && rm -rf /var/lib/apt/lists/*
