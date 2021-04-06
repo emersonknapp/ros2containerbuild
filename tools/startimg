@@ -1,0 +1,1 @@
+rocker --user --x11 bagdev --oyr-run-arg "--name bagdev --rm -w /bag_ws -v $(pwd):/bag_ws -v $(pwd)/../master:/ws"
